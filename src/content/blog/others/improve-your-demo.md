@@ -1,9 +1,8 @@
 ---
 title: 'Improve your demo and get more for yourself.'
 description: 'One of the developer’s responsibilities is to present features and changes to clients and product owners. In this article, I would like to give you a few suggestions on how to can improve your presentations, make a good impression and build your look as an expert.'
-pubDate: 'Jul 08 2022'
+pubDate: 'Nov 5 2022'
 tags: 'Presentation'
-heroImage: '/blog-placeholder-2.jpg'
 ---
 
 One of the developer’s responsibilities is to present features and changes to clients and product owners. In this article, I would like to give you a few suggestions on how to can improve your presentations, make a good impression and build your look as an expert.

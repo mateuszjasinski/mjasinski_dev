@@ -1,7 +1,7 @@
 ---
 title: 'Using MinIO with Django for local development'
 description: "The development process of modern applications can bring us to the moment when our local environment is slightly different from the cloud version. This can result in the need to test applications both locally and after deployment. In this article, I'll introduce a solution that allows you to easily replicate AWS S3 bucket functionality within your local setup."
-pubDate: 'Jul 08 2022'
+pubDate: 'May 13 2022'
 ---
 
 The development process of modern applications can bring us to the moment when our local environment is slightly different from the cloud version. This can result in the need to test applications both locally and after deployment. In this article, I'll introduce a solution that allows you to easily replicate AWS S3 bucket functionality within your local setup.

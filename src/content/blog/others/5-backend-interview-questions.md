@@ -1,7 +1,7 @@
 ---
 title: '5 Backend Interview Questions'
 description: 'Preparing for a backend engineering interview can be a challenging yet rewarding experience. Based on my experience as a technical recruiter I will give you a few tips and, more importantly, tell you what you can expect during a technical interview.'
-pubDate: 'Jul 08 2022'
+pubDate: 'Jan 04 2024'
 tags: 'Interview'
 ---
 

@@ -15,21 +15,6 @@ const { title, description, pubDate, updatedDate, heroImage, tags } = Astro.prop
 <html lang="en">
 	<head>
 		<BaseHead title={title} description={description} />
-		<style>
-			main {
-				width: calc(100% - 2em);
-				max-width: 100%;
-				margin: 0;
-			}
-			
-			.date {
-				margin-bottom: 0.5em;
-				color: rgb(var(--gray));
-			}
-			.last-updated-on {
-				font-style: italic;
-			}
-		</style>
 	</head>
 
 	<body>
@@ -37,15 +22,14 @@ const { title, description, pubDate, updatedDate, heroImage, tags } = Astro.prop
 		<main>
 			<article>
 				<div class='w-full'>
-					<div class="p-16">
+					<div class="lg:p-4">
 						<h1>{title}</h1>
 						<div class="text-gray-400"><FormattedDate date={pubDate} /></div>
 					</div>
 					<hr />
 				</div>
 
-
-				<div class="w-[720px] m-auto mt-4">
+				<div class="w-full lg:w-[720px] m-auto mt-4">
 					<slot/>
 				</div>
 			</article>
