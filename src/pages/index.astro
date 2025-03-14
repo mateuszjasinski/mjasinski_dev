@@ -6,6 +6,7 @@ import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
 import { getCollection } from 'astro:content';
 import FormattedDate from '../components/FormattedDate.astro';
 import "../styles/global.css";
+import IndexHeader from '../components/IndexHeader.astro';
 
 
 
@@ -23,16 +24,9 @@ const latestPosts = (await getCollection('blog')).sort(
 	<body>
 		<Header />
 		<main>
-			<h1 class="text-4xl">Hello coders 👋</h1>
-			<p>
-				Welcome to my corner of the internet, where backend development meets fresh ideas and practical solutions!			
-			</p>
-			<p>
-				My goal is to inspire you to experiment with new skills, adopt modern tools, and continuously evolve as a developer. 
-				So grab a coffee, dig into the posts, and let’s build something great together! 🚀
-			</p>
-			<hr/>
-			<h4 class="py-8">Latest posts</h3>
+			<IndexHeader/>
+
+			<h4 class="py-8 font-semibold">Latest posts</h3>
 			<section>
 				<ul>
 					{
