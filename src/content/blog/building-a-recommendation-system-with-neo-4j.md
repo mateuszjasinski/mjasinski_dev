@@ -2,6 +2,7 @@
 title: 'Building a recommendation system using Neo4j'
 description: 'Modern applications now rely on recommendation systems to power personalized suggestions that improve user experiences. In this article, we’ll look at how to use Neo4j to create a simple recommendation system.'
 pubDate: 'Jun 16 2023'
+tags: ['Neo4j', 'Databases', 'Python']
 ---
 
 #### Recommendation system

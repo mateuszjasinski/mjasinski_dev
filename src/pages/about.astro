@@ -1,42 +1,211 @@
 ---
-import { Image } from 'astro:assets';
 import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
-import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
-import avatar from "../../public/avatar.jpeg";
+import { SITE_TITLE } from '../consts';
 
+const ABOUT_DESCRIPTION =
+	'Senior software engineer designing, implementing, and operating production backend systems in Python.';
+
+const links = [
+	{ label: 'Email', href: 'mailto:mateusz@jasinski.software' },
+	{ label: 'GitHub', href: 'https://github.com/mateuszjasinski' },
+	{ label: 'Resume', href: '/mateusz_jasinski_lead_engineer.pdf' },
+];
+
+const stats = [
+	{ value: '9+', label: 'Years shipping production backends' },
+	{ value: '10+', label: 'Products across finance & health' },
+	{ value: '40k+', label: 'Daily users on systems I built' },
+	{ value: '8', label: 'Engineers led on one team' },
+];
+
+const experience = [
+	{
+		meta: 'Aug 2017 → Present · Full time',
+		title: 'Software Engineer → Technical Lead',
+		company: 'Kellton Europe (formerly Tivix)',
+		summary:
+			'Progressed from individual contributor to technical lead across multiple projects in finance, healthcare, and science.',
+		points: [
+			'Designed and delivered backend systems in Python (Django, FastAPI) for 10+ client products, owning architecture from API design through deployment on Kubernetes/AWS.',
+			'Partnered with design and product teams to translate requirements into scalable API contracts and data models.',
+			'Mentored engineers through feature implementation, raising code quality and shipping velocity; hosted 6+ company meetups.',
+		],
+	},
+	{
+		meta: 'Nov 2019 → Dec 2023 · Part time',
+		title: 'Senior Engineer → Product Owner / Lead Architect',
+		company: 'DoveMed Ltd.',
+		summary:
+			'Part-time technical lead and architect for digital health products, held alongside my full-time role — building consumer-facing products for U.S. patients and providers.',
+		points: [
+			'Led a team of 4 engineers to architect and deploy healthcare applications within a 3–4 month timeframe.',
+			'Designed and implemented an API handling 40,000+ unique users daily.',
+			'Owned the lifecycle of 10+ digital products built by 3 independent teams, using data usage to drive architectural improvements.',
+		],
+	},
+];
+
+const skillGroups = [
+	{ label: 'Languages', items: ['Python', 'Javascript', 'SQL'] },
+	{ label: 'Frameworks', items: ['Django', 'FastAPI', 'Celery'] },
+	{
+		label: 'Data & Messaging',
+		items: ['PostgreSQL', 'Apache Kafka', 'Redis', 'Elasticsearch', 'Neo4j / FalkorDB'],
+	},
+	{
+		label: 'Architecture',
+		items: ['Distributed systems', 'DDD', 'Event-sourcing', 'Ports/adapters', 'Microservices', 'REST API design'],
+	},
+	{
+		label: 'Infrastructure & Cloud',
+		items: ['Kubernetes', 'Docker', 'AWS (Lambda, S3, SQS)', 'CI/CD'],
+	},
+	{
+		label: 'AI Tooling',
+		items: ['Claude (custom skills & agents)', 'AI-assisted workflows'],
+	},
+];
 ---
+
 <!doctype html>
 <html lang="en">
 	<head>
-		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+		<BaseHead title={`About · ${SITE_TITLE}`} description={ABOUT_DESCRIPTION} />
 	</head>
 	<body>
 		<Header />
 		<main>
-			<p>
-				I'm <b>Mateusz Jasiński</b>, Experienced Engineering Manager with 8+ years in the IT industry,
-				specializing in system architecture, project leadership, and digital product development.
-				Proficient in modern Python frameworks, with hands-on expertise in shaping and delivering complex projects from concept to release. 
-				Successfully managed the development and launch of over 10 products, leading three cross-functional teams across different time zones.
-				Known for driving technical excellence, optimizing processes, and ensuring timely, high-quality outcomes in fast-paced environments.
-			</p>
-		
-			<!-- <p>
-				Do logos here
-				<ul class="list-disc">
-					<li>System design/architecture</li>
-					<li>Python</li>
-					<li>Web Frameworks - Django, FastAPI</li>
-					<li>Kubenetes</li>
-					<li>Docker</li>
-				</ul>
-			</p>
+			<div class="py-12 md:py-16">
+				<!-- Hero -->
+				<section>
+					<p class="eyebrow">The climber</p>
+					<h1 class="mt-3 text-4xl font-bold leading-[1.1] text-slate-50 sm:text-5xl md:text-6xl">
+						Nine years of building backend systems that hold up under load.
+					</h1>
+					<p class="mt-6 w-full text-base leading-relaxed text-slate-400 sm:text-lg">
+						Senior software engineer designing, implementing, and operating production backend
+						systems in Python. I specialize in complex web-based services — distributed-system
+						architecture and event-sourcing — and I've delivered 10+ products across finance,
+						healthcare, and science, driving technical decisions and mentoring the engineers around me.
+					</p>
+					<div class="mt-8 flex flex-wrap gap-3">
+						{
+							links.map(({ label, href }) => (
+								<a
+									href={href}
+									class="rounded-md border border-slate-700/70 bg-slate-800/40 px-4 py-2 font-mono text-xs uppercase tracking-[0.12em] text-slate-300 no-underline transition-colors hover:border-accent/60 hover:text-accent-hover"
+								>
+									{label}
+								</a>
+							))
+						}
+					</div>
+				</section>
 
-			<p>
-				My projects
-			</p> -->
+				<hr class="my-12" />
+
+				<!-- Stats -->
+				<section class="grid grid-cols-2 gap-x-6 gap-y-8 sm:grid-cols-4">
+					{
+						stats.map(({ value, label }) => (
+							<div>
+								<div class="text-3xl font-bold text-accent sm:text-4xl">{value}</div>
+								<div class="mt-2 font-mono text-[0.65rem] uppercase leading-snug tracking-[0.12em] text-slate-500">
+									{label}
+								</div>
+							</div>
+						))
+					}
+				</section>
+
+				<hr class="my-12" />
+
+				<!-- Experience -->
+				<section>
+					<p class="eyebrow">The route so far</p>
+					<h2 class="mt-3 mb-8 text-2xl font-bold text-slate-50 sm:text-3xl">
+						Professional experience
+					</h2>
+
+					<ol class="relative m-0 list-none space-y-10 p-0">
+						{/* connecting line down the timeline */}
+						<span
+							class="absolute left-[22px] top-3 bottom-3 w-px bg-slate-700/60"
+							aria-hidden="true"
+						></span>
+
+						{
+							experience.map((job, i) => (
+								<li class="relative flex gap-4 sm:gap-6">
+									{/* Indexed hexagon pin — mirrors the terrain / article motif */}
+									<div class="relative z-10 flex h-11 w-11 shrink-0 items-center justify-center">
+										<svg viewBox="0 0 100 100" class="absolute inset-0 h-full w-full" aria-hidden="true">
+											<polygon
+												class="fill-slate-900 stroke-accent"
+												points="50,3 96,27 96,73 50,97 4,73 4,27"
+												stroke-width="4"
+												stroke-linejoin="round"
+											/>
+										</svg>
+										<span class="relative font-mono text-sm font-semibold text-accent">
+											{String(i + 1).padStart(2, '0')}
+										</span>
+									</div>
+
+									<div class="min-w-0 flex-1 pt-1">
+										<p class="m-0 font-mono text-[0.7rem] uppercase tracking-[0.12em] text-slate-500">
+											{job.meta}
+										</p>
+										<h3 class="mt-2 mb-0 text-lg font-bold text-slate-50 sm:text-xl">{job.title}</h3>
+										<p class="m-0 font-medium text-accent-hover/90">{job.company}</p>
+										<p class="mt-3 mb-0 leading-relaxed text-slate-400">{job.summary}</p>
+										<ul class="m-0 mt-4 list-none space-y-2 p-0">
+											{job.points.map((point) => (
+												<li class="flex gap-3 text-sm leading-relaxed text-slate-400 sm:text-base">
+													<span
+														class="mt-2 h-1.5 w-1.5 shrink-0 rotate-45 bg-accent"
+														aria-hidden="true"
+													/>
+													<span>{point}</span>
+												</li>
+											))}
+										</ul>
+									</div>
+								</li>
+							))
+						}
+					</ol>
+				</section>
+
+				<hr class="my-12" />
+
+				<!-- Skills -->
+				<section>
+					<p class="eyebrow">Gear & equipment</p>
+					<h2 class="mt-3 mb-8 text-2xl font-bold text-slate-50 sm:text-3xl">Technical skills</h2>
+
+					<div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+						{
+							skillGroups.map(({ label, items }) => (
+								<div class="rounded-xl border border-slate-700/60 bg-slate-800/30 p-5">
+									<p class="m-0 font-mono text-[0.65rem] uppercase tracking-[0.14em] text-slate-500">
+										{label}
+									</p>
+									<ul class="m-0 mt-4 flex list-none flex-wrap gap-2 p-0">
+										{items.map((item) => (
+											<li class="rounded-full border border-slate-700/70 bg-slate-800/50 px-3 py-1 font-mono text-xs text-slate-300">
+												{item}
+											</li>
+										))}
+									</ul>
+								</div>
+							))
+						}
+					</div>
+				</section>
+			</div>
 		</main>
 		<Footer />
 	</body>

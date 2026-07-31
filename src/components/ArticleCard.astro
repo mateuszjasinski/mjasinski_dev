@@ -1,0 +1,78 @@
+---
+import FormattedDate from "./FormattedDate.astro";
+import { tagSlug } from "../lib/posts";
+
+export interface Props {
+	index: number;
+	href: string;
+	title: string;
+	date: Date;
+	minutes: number;
+	description: string;
+	tags?: string[];
+}
+
+const { index, href, title, date, minutes, description, tags = [] } = Astro.props;
+const num = String(index).padStart(2, "0");
+---
+
+<a
+	href={href}
+	class="article-card group flex items-start gap-4 py-6 no-underline sm:gap-6"
+	data-tags={tags.map(tagSlug).join(" ")}
+>
+	{/* Indexed hexagon — mirrors the terrain pin motif */}
+	<div
+		class="relative flex h-11 w-11 shrink-0 items-center justify-center transition-transform group-hover:-translate-y-0.5"
+	>
+		<svg
+			viewBox="0 0 100 100"
+			class="absolute inset-0 h-full w-full"
+			aria-hidden="true"
+		>
+			<polygon
+				class="fill-slate-900/60 stroke-accent"
+				points="50,3 96,27 96,73 50,97 4,73 4,27"
+				stroke-width="4"
+				stroke-linejoin="round"
+			/>
+		</svg>
+		<span class="card-num relative font-mono text-sm font-semibold text-accent">
+			{num}
+		</span>
+	</div>
+
+	<div class="min-w-0">
+		<p
+			class="m-0 font-mono text-xs uppercase tracking-[0.15em] text-slate-500"
+		>
+			<FormattedDate date={date} /> · {minutes} MIN
+		</p>
+		<h3
+			class="mt-2 mb-0 text-xl font-bold leading-snug text-slate-50 transition-colors group-hover:text-accent-hover md:text-2xl"
+		>
+			{title}
+		</h3>
+		<p class="mt-2 mb-0 line-clamp-3 leading-relaxed text-slate-400">
+			{description}
+		</p>
+		{
+			tags.length > 0 && (
+				<ul class="m-0 mt-3 flex list-none flex-wrap gap-2 p-0">
+					{tags.map((tag) => (
+						<li class="rounded-full border border-slate-700/70 bg-slate-800/40 px-2.5 py-0.5 font-mono text-[0.65rem] uppercase tracking-[0.12em] text-slate-400">
+							{tag}
+						</li>
+					))}
+				</ul>
+			)
+		}
+	</div>
+</a>
+
+<style>
+	/* FormattedDate renders "Mar 10, 2025" — match the mockup's uppercase meta */
+	.article-card :global(time) {
+		text-transform: uppercase;
+	}
+</style>

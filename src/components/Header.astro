@@ -1,68 +1,205 @@
 ---
-import HeaderLink from './HeaderLink.astro';
-import { SITE_TITLE } from '../consts';
-import "../styles/global.css";
+const pathname =
+	"/" + (Astro.url.pathname.replace(import.meta.env.BASE_URL, "").match(/[^/]+/g)?.[0] || "");
+
+const links = [
+	{ href: "/", label: "Home" },
+	{ href: "/blog", label: "Blog" },
+	{ href: "/about", label: "About" },
+];
+
+const isActive = (href: string) => pathname === href;
 ---
 
-<header>
-	<nav>
-		<h2><a href="/">{SITE_TITLE}</a></h2>
-		<div class="internal-links">
-			<HeaderLink href="/">Home</HeaderLink>
-			<HeaderLink href="/blog">Blog</HeaderLink>
-			<HeaderLink href="/about">About</HeaderLink>
+<header class="bg-gradient-to-b from-slate-950 to-slate-900">
+	<nav
+		class="relative mx-auto flex w-[1080px] max-w-[calc(100%-2em)] items-center justify-between gap-4 py-4"
+	>
+		<!-- Brand -->
+		<a href="/" class="no-underline">
+			<span class="flex flex-col items-start gap-y-0.5 md:flex-row md:items-baseline md:gap-x-2">
+				<span class="font-sans text-xl font-bold text-slate-50">Mateusz Jasiński</span>
+				<span class="font-mono text-xs uppercase tracking-wide text-slate-400">
+					Senior Software Engineer
+				</span>
+			</span>
+		</a>
+
+		<!-- Desktop nav (md and up) -->
+		<div
+			class="hidden items-center gap-1 rounded-full border border-slate-700/50 bg-slate-800/40 px-2 py-1.5 backdrop-blur-sm md:flex"
+		>
+			{
+				links.map(({ href, label }) => (
+					<a
+						href={href}
+						aria-current={isActive(href) ? "page" : undefined}
+						class:list={[
+							"nav-link rounded-full px-4 py-1.5 text-sm font-medium no-underline transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/60",
+							isActive(href) ? "bg-slate-700/60" : "hover:bg-slate-700/40",
+						]}
+					>
+						{label}
+					</a>
+				))
+			}
 		</div>
-		<div class="social-links">
-			<a href="https://github.com/mateuszjasinski" target="_blank">
-				<span class="sr-only">Go to Astro's GitHub repo</span>
-				<svg viewBox="0 0 16 16" aria-hidden="true" width="32" height="32"
-					><path
-						fill="currentColor"
-						d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"
-					></path></svg
-				>
-			</a>
+
+		<!-- Hamburger toggle (below md) -->
+		<button
+			id="mobile-menu-toggle"
+			type="button"
+			class="mobile-toggle shrink-0 rounded-lg text-accent transition-colors hover:bg-slate-800/60 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/60 md:hidden"
+			aria-label="Toggle navigation menu"
+			aria-expanded="false"
+			aria-controls="mobile-menu"
+		>
+			<span class="bar"></span>
+			<span class="bar"></span>
+			<span class="bar"></span>
+		</button>
+
+		<!-- Mobile dropdown panel (below md) -->
+		<div id="mobile-menu" class="mobile-menu absolute inset-x-0 top-full z-50 mt-2 origin-top md:hidden">
+			<div
+				class="flex flex-col gap-1 rounded-2xl border border-slate-700/50 bg-slate-900/95 p-2 shadow-lg backdrop-blur-sm"
+			>
+				{
+					links.map(({ href, label }) => (
+						<a
+							href={href}
+							aria-current={isActive(href) ? "page" : undefined}
+							class:list={[
+								"nav-link rounded-xl px-4 py-3 text-base font-medium no-underline transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/60",
+								isActive(href) ? "bg-slate-800/70" : "hover:bg-slate-800/50",
+							]}
+						>
+							{label}
+						</a>
+					))
+				}
+			</div>
 		</div>
 	</nav>
 </header>
+
 <style>
-	header {
-		margin: 0;
-		padding: 0 1em;
-		background: white;
-		box-shadow: 0 2px 8px rgba(var(--black), 5%);
-	}
-	h2 {
-		margin: 0;
-		font-size: 1em;
+	/* Nav links — accent by default, brighter when hovered or on the current page.
+	   Scoped here so the color reliably wins over the global `a { color: … }` rule. */
+	.nav-link {
+		color: var(--accent);
 	}
 
-	h2 a,
-	h2 a.active {
-		text-decoration: none;
+	.nav-link:hover,
+	.nav-link[aria-current="page"] {
+		color: var(--accent-hover);
 	}
-	nav {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
+
+	/* Hamburger button — three orange bars that morph into an X */
+	.mobile-toggle {
+		position: relative;
+		width: 2.75rem;
+		height: 2.75rem;
 	}
-	nav a {
-		padding: 1em 0.5em;
-		color: var(--black);
-		border-bottom: 4px solid transparent;
-		text-decoration: none;
+
+	.mobile-toggle .bar {
+		position: absolute;
+		left: 50%;
+		top: 50%;
+		width: 24px;
+		height: 2px;
+		border-radius: 9999px;
+		background-color: var(--accent);
+		transform: translate(-50%, -50%);
+		transition:
+			transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+			opacity 0.2s ease;
 	}
-	nav a.active {
-		text-decoration: none;
-		border-bottom-color: var(--accent);
+
+	.mobile-toggle .bar:nth-child(1) {
+		transform: translate(-50%, calc(-50% - 7px));
 	}
-	.social-links,
-	.social-links a {
-		display: flex;
+
+	.mobile-toggle .bar:nth-child(3) {
+		transform: translate(-50%, calc(-50% + 7px));
 	}
-	@media (max-width: 720px) {
-		.social-links {
-			display: none;
+
+	.mobile-toggle.is-open .bar:nth-child(1) {
+		transform: translate(-50%, -50%) rotate(45deg);
+	}
+
+	.mobile-toggle.is-open .bar:nth-child(2) {
+		opacity: 0;
+	}
+
+	.mobile-toggle.is-open .bar:nth-child(3) {
+		transform: translate(-50%, -50%) rotate(-45deg);
+	}
+
+	/* Dropdown panel — hidden from a11y tree and tab order when closed */
+	.mobile-menu {
+		opacity: 0;
+		visibility: hidden;
+		transform: translateY(-0.5rem);
+		pointer-events: none;
+		transition:
+			opacity 0.2s ease,
+			transform 0.2s ease,
+			visibility 0s linear 0.2s;
+	}
+
+	.mobile-menu.is-open {
+		opacity: 1;
+		visibility: visible;
+		transform: translateY(0);
+		pointer-events: auto;
+		transition:
+			opacity 0.2s ease,
+			transform 0.2s ease,
+			visibility 0s;
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.mobile-toggle .bar,
+		.mobile-menu {
+			transition-duration: 0s;
 		}
 	}
 </style>
+
+<script>
+	const toggle = document.getElementById("mobile-menu-toggle");
+	const menu = document.getElementById("mobile-menu");
+
+	if (toggle && menu) {
+		const setOpen = (open: boolean) => {
+			toggle.classList.toggle("is-open", open);
+			menu.classList.toggle("is-open", open);
+			toggle.setAttribute("aria-expanded", String(open));
+		};
+
+		toggle.addEventListener("click", (e) => {
+			e.stopPropagation();
+			setOpen(toggle.getAttribute("aria-expanded") !== "true");
+		});
+
+		// Close after navigating
+		menu.querySelectorAll("a").forEach((a) => a.addEventListener("click", () => setOpen(false)));
+
+		// Close on Escape
+		document.addEventListener("keydown", (e) => {
+			if (e.key === "Escape") setOpen(false);
+		});
+
+		// Close on click outside
+		document.addEventListener("click", (e) => {
+			const target = e.target as Node;
+			if (!menu.contains(target) && !toggle.contains(target)) setOpen(false);
+		});
+
+		// Reset when resizing up to desktop
+		window.addEventListener("resize", () => {
+			if (window.innerWidth >= 768) setOpen(false);
+		});
+	}
+</script>

@@ -2,6 +2,7 @@
 title: 'Smart ways for using decorators - part 1'
 description: ""
 pubDate: 'March 10 2025'
+tags: ['Python']
 ---
 
 This article is the first from the series, where I would like to show you, smart/unusual ways of using decorators in Python. My goal is to encurage you use them more offen to make your code much cleaner, but mostly more extandable.

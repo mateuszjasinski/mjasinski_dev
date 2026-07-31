@@ -4,12 +4,20 @@ import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
 import { SITE_TITLE, SITE_DESCRIPTION } from '../../consts';
 import { getCollection } from 'astro:content';
-import FormattedDate from '../../components/FormattedDate.astro';
+import ArticleCard from '../../components/ArticleCard.astro';
+import { readingTimeMinutes, cardDescription, tagSlug } from '../../lib/posts';
 
 
 const posts = (await getCollection('blog')).sort(
 	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
 );
+
+// Unique tags across all posts (slug → label), sorted alphabetically by label.
+const tags = Array.from(
+	new Map(posts.flatMap((p) => p.data.tags).map((t) => [tagSlug(t), t])).entries(),
+)
+	.map(([slug, label]) => ({ slug, label }))
+	.sort((a, b) => a.label.localeCompare(b.label));
 
 ---
 
@@ -22,28 +30,137 @@ const posts = (await getCollection('blog')).sort(
 		<Header />
 		<main>			
 			<section>
-				<h4 class="">Latest posts</h4>
-				<hr class="pb-8"/>
-				<ul>
+				<header class="border-b border-slate-800/70 pb-6">
+					<h1 class="m-0 text-3xl font-bold text-slate-50 md:text-4xl">The trail</h1>
+					<p class="eyebrow-sub mt-2 mb-0">
+						Every waypoint so far
+					</p>
+				</header>
+
+				{
+					tags.length > 0 && (
+						<div
+							id="tag-filter"
+							class="mt-6 flex flex-wrap gap-2"
+							role="group"
+							aria-label="Filter posts by tag"
+						>
+							<button type="button" class="tag-chip" data-tag="" aria-pressed="true">
+								All
+							</button>
+							{tags.map((t) => (
+								<button
+									type="button"
+									class="tag-chip"
+									data-tag={t.slug}
+									aria-pressed="false"
+								>
+									{t.label}
+								</button>
+							))}
+						</div>
+					)
+				}
+
+				<div id="post-list" class="divide-y divide-slate-800/70">
 					{
-						posts.map((post) => (
-							<li>
-								<a href={`/blog/${post.id}/`}>
-									<h4>{post.data.title}</h4>
-									<p class="text-gray-400 m-0 text-sm">
-										<FormattedDate date={post.data.pubDate} />
-									</p>
-									<p class="text-gray-400 m-0">
-										{post.data.description.slice(0, 200)}...
-									</p>
-								</a>
-								<br/>
-							</li>
+						posts.map((post, i) => (
+							<ArticleCard
+								index={i + 1}
+								href={`/blog/${post.id}/`}
+								title={post.data.title}
+								date={post.data.pubDate}
+								minutes={readingTimeMinutes(post.body)}
+								description={cardDescription(post.data.description, post.body)}
+								tags={post.data.tags}
+							/>
 						))
 					}
-				</ul>
+				</div>
+
+				<p id="no-results" class="mt-10 hidden text-center font-mono text-sm text-slate-500">
+					No posts tagged with this yet — pick another waypoint.
+				</p>
 			</section>
 		</main>
 		<Footer />
+
+		<style>
+			.tag-chip {
+				border-radius: 9999px;
+				border: 1px solid rgba(51, 65, 85, 0.7); /* slate-700 */
+				background: rgba(30, 41, 59, 0.4); /* slate-800 */
+				padding: 0.25rem 0.85rem;
+				font-family: var(--font-mono);
+				font-size: 0.72rem;
+				text-transform: uppercase;
+				letter-spacing: 0.12em;
+				color: rgb(148 163 184); /* slate-400 */
+				cursor: pointer;
+				transition:
+					color 0.15s ease,
+					border-color 0.15s ease,
+					background-color 0.15s ease;
+			}
+			.tag-chip:hover {
+				border-color: color-mix(in srgb, var(--accent) 50%, transparent);
+				color: var(--accent-hover);
+			}
+			.tag-chip[aria-pressed="true"] {
+				border-color: color-mix(in srgb, var(--accent) 60%, transparent);
+				background: color-mix(in srgb, var(--accent) 12%, transparent);
+				color: var(--accent-hover);
+			}
+		</style>
+
+		<script>
+			const filter = document.getElementById("tag-filter");
+			const list = document.getElementById("post-list");
+			const noResults = document.getElementById("no-results");
+
+			if (filter && list) {
+				const chips = [...filter.querySelectorAll<HTMLButtonElement>(".tag-chip")];
+				const cards = [...list.querySelectorAll<HTMLElement>(".article-card")];
+
+				const apply = (tag: string) => {
+					let visible = 0;
+					cards.forEach((card) => {
+						const cardTags = (card.dataset.tags ?? "").split(" ").filter(Boolean);
+						const show = !tag || cardTags.includes(tag);
+						card.hidden = !show;
+						if (show) {
+							visible++;
+							const num = card.querySelector(".card-num");
+							if (num) num.textContent = String(visible).padStart(2, "0");
+						}
+					});
+
+					chips.forEach((chip) =>
+						chip.setAttribute(
+							"aria-pressed",
+							String((chip.dataset.tag ?? "") === tag),
+						),
+					);
+					noResults?.classList.toggle("hidden", visible > 0);
+				};
+
+				const currentTag = () =>
+					(new URLSearchParams(location.search).get("tag") ?? "").toLowerCase();
+
+				chips.forEach((chip) =>
+					chip.addEventListener("click", () => {
+						const tag = chip.dataset.tag ?? "";
+						const url = new URL(location.href);
+						if (tag) url.searchParams.set("tag", tag);
+						else url.searchParams.delete("tag");
+						history.replaceState({}, "", url);
+						apply(tag);
+					}),
+				);
+
+				// Honor a deep-link like /blog?tag=django (e.g. from the terrain pins).
+				apply(currentTag());
+			}
+		</script>
 	</body>
 </html>

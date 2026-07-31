@@ -2,10 +2,9 @@
 title: 'Unlocking Scalability and Resilience with Event-Driven Architecture: A Smart Home Showcase'
 description: "Are you looking to build a system that's scalable, efficient, and resilient to failure? Event-driven architecture (EDA) might be the answer. In this article, we'll walk through the design of a Smart Home application to illustrate the power of EDA. From handling real-time events with producers and consumers to ensuring independent, fault-tolerant components, we'll break down the system design process step by step. Let's dive in!"
 pubDate: 'Mar 8 2025'
-tags: 'System design'
+tags: ['System design']
 ---
 
-Are you looking to build a system that's scalable, efficient, and resilient to failure? Event-driven architecture (EDA) might be the answer. In this article, we'll walk through the design of a Smart Home application to illustrate the power of EDA. From handling real-time events with producers and consumers to ensuring independent, fault-tolerant components, we'll break down the system design process step by step. Let's dive in!
 
 #### A bit of theory 
 

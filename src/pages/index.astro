@@ -4,9 +4,10 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
 import { getCollection } from 'astro:content';
-import FormattedDate from '../components/FormattedDate.astro';
-import "../styles/global.css";
 import IndexHeader from '../components/IndexHeader.astro';
+import Basecamp from '../components/Basecamp.astro';
+import ArticleCard from '../components/ArticleCard.astro';
+import { readingTimeMinutes, cardDescription } from '../lib/posts';
 
 
 
@@ -25,33 +26,35 @@ const latestPosts = (await getCollection('blog')).sort(
 		<Header />
 		<main>
 			<IndexHeader/>
-
-			<h4 class="py-8 font-semibold">Latest posts</h3>
-			<section>
-				<ul>
+			<section class="mt-20">
+				<header class="border-b border-slate-800/70 pb-6">
+					<h2 class="m-0 text-xl text-slate-50 md:text-4xl">Latest posts</h2>
+					<p class="eyebrow-sub mt-2 mb-0">
+						Waypoints along the route
+					</p>
+				</header>
+				<div class="divide-y divide-slate-800/70">
 					{
-						latestPosts.map((post) => (
-							<li>
-								<a href={`/blog/${post.id}/`}>
-									<h4>{post.data.title}</h4>
-									<p class="text-gray-400 m-0 text-sm">
-										<FormattedDate date={post.data.pubDate} />
-									</p>
-									<p class="text-gray-400 m-0">
-										{post.data.description.slice(0, 200)}...
-									</p>
-								</a>
-								<br/>
-							</li>
+						latestPosts.map((post, i) => (
+							<ArticleCard
+								index={i + 1}
+								href={`/blog/${post.id}/`}
+								title={post.data.title}
+								date={post.data.pubDate}
+								minutes={readingTimeMinutes(post.body)}
+								description={cardDescription(post.data.description, post.body)}
+								tags={post.data.tags}
+							/>
 						))
 					}
-				</ul>
-				<a href="/blog" class="decoration-0">
-					<div class="flex text-black justify-center">
-						See more
+				</div>
+				<a href="/blog" class="no-underline">
+					<div class="mt-6 font-sans flex justify-center text-accent transition-colors hover:text-accent-hover">
+						See all posts →
 					</div>
 				</a>
 			</section>
+			<Basecamp />
 		</main>
 		<Footer />
 	</body>

@@ -1,0 +1,27 @@
+---
+// Renders a Strava activity/route embed. Strava's embed.js swaps every
+// `.strava-embed-placeholder` for an iframe once it loads and scans the DOM.
+// On a static Astro page the placeholder is already in the initial HTML, so
+// simply loading the script once is enough — no client-side re-scan needed.
+type Props = {
+	id: string;
+	token: string;
+	type?: 'activity' | 'route';
+	style?: 'standard' | 'minimal';
+};
+
+const { id, token, type = 'activity', style = 'standard' } = Astro.props;
+---
+
+<div class="not-prose flex justify-center">
+	<div
+		class="strava-embed-placeholder w-full"
+		data-embed-type={type}
+		data-embed-id={id}
+		data-style={style}
+		data-from-embed="false"
+		data-token={token}
+	>
+	</div>
+</div>
+<script is:inline async src="https://strava-embeds.com/embed.js"></script>

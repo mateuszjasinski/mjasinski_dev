@@ -2,20 +2,19 @@
 title: 'Using MinIO with Django for local development'
 description: "The development process of modern applications can bring us to the moment when our local environment is slightly different from the cloud version. This can result in the need to test applications both locally and after deployment. In this article, I'll introduce a solution that allows you to easily replicate AWS S3 bucket functionality within your local setup."
 pubDate: 'May 13 2022'
+tags: ['Django', 'Python']
 ---
-
-The development process of modern applications can bring us to the moment when our local environment is slightly different from the cloud version. This can result in the need to test applications both locally and after deployment. In this article, I'll introduce a solution that allows you to easily replicate AWS S3 bucket functionality within your local setup.
 
 For this article's purposes, I created a simple blog application that will store statics and uploaded files to the S3 bucket.
 
-#### What is MinIO?
+# What is MinIO?
 MinIO is a service that provides S3 object storage. MinIO allows us to create multiple buckets, upload files using AWS API and browse them using a friendly-looking dashboard.
 
 From the developers' perspective, we can avoid creating multiple configurations for different environments and make application deployment much smoother — we can test S3 communication and features during development.
 
 For more details, head over to https://min.io/. Below are a few screenshots from the MinIO dashboard.
 
-#### Docker configuration
+# Docker configuration
 To use MinIO we need to configure two additional containers in our docker-compose:
 
 - minio — the main container that will simulate your S3 service
@@ -54,8 +53,8 @@ The above configuration is prepared to create a single server running on port 90
 
 Said configuration uses volumes to keep your objects persistent. If you want to clear your bucket after stopping your containers, remove volumes from minio container configuration.
 
-#### Django configuration
-##### Custom storage
+# Django configuration
+## Custom storage
 Default S3Boto Storage requires some additional changes to work with our setup. Since we’re working with Docker inside the Docker network, the MinIO container is accessible on minio:9000, but outside of the network, we can access MinIO on localhost:9000. To handle returning the proper paths through to the browsers we need to set up a custom domain for our storage.
 
 ```python
@@ -77,7 +76,7 @@ class S3MediaStorage(S3Boto3Storage):
         super(S3MediaStorage, self).__init__(*args, **kwargs)
 ```
 
-##### Settings file
+## Settings file
 In Django, we need to use a default configuration for using S3. Remember to use custom storage from the previous step.
 
 settings.py
@@ -106,7 +105,7 @@ AWS_S3_URL=http://minio:9000
 MINIO_ACCESS_URL=localhost:9000/<your-bucket-name>
 ```
 
-#### Summary
+# Summary
 This article presents the most common usage of MinIO, but this is only the tip of the iceberg. As devs, we used it to solve more issues, such as:
 - Creating dedicated buckets for dynamic environments
 - Pretesting private buckets accessing for heavily secure applications
