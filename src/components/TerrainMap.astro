@@ -1,0 +1,287 @@
+---
+import HexPin from "./HexPin.astro";
+import {
+	Code,
+	Terminal,
+	Activity,
+	Atom,
+	Braces,
+	Globe,
+	Server,
+	Database,
+	Webhook,
+	Mountain,
+	Timer,
+	HeartPulse,
+	Sportshoe
+} from "lucide-astro";
+
+// ── Scaffold data ────────────────────────────────────────────────────────────
+// Each category is a primary pin on the terrain. Clicking it zooms the map to
+// its `focus` point and reveals its `subPins` (which link to a tag-filtered
+// blog view). All positions are % of the terrain image — tweak freely.
+//
+//  - left/top      : where the primary hexagon centers
+//  - size/stem     : primary pin sizing (cqw scales with the image)
+//  - focus/zoom    : the point to center + how much to magnify on click
+//  - subPins       : { icon, label, tag, left, top } shown when zoomed in
+const categories = [
+	{
+		id: "web",
+		icon: Code,
+		label: "Web development",
+		left: "56%",
+		top: "1%",
+		size: "clamp(34px, 5.1cqw, 52px)",
+		stem: "7.6cqw",
+		focus: { x: 58, y: 20 },
+		zoom: 2,
+		subPins: [
+			{ icon: Atom, label: "System design", tag: "system-design", left: "48%", top: "13%" },
+			{ icon: Braces, label: "Kubernetes", tag: "kubernetes", left: "67%", top: "16%" },
+			// { icon: Globe, label: "Astro", tag: "astro", left: "60%", top: "31%" },
+		],
+	},
+	{
+		id: "coding",
+		icon: Terminal,
+		label: "Coding",
+		left: "31%",
+		top: "36%",
+		size: "clamp(30px, 4.6cqw, 46px)",
+		stem: "5.7cqw",
+		focus: { x: 31, y: 52 },
+		zoom: 2.1,
+		subPins: [
+			{ icon: Server, label: "Django", tag: "django", left: "21%", top: "46%" },
+			{ icon: Code, label: "Python", tag: "python", left: "40%", top: "49%" },
+			// { icon: Webhook, label: "APIs", tag: "api", left: "30%", top: "63%" },
+		],
+	},
+	{
+		id: "running",
+		icon: Activity,
+		label: "Running",
+		left: "63%",
+		top: "56%",
+		size: "clamp(28px, 4.4cqw, 44px)",
+		stem: "4.5cqw",
+		focus: { x: 64, y: 70 },
+		zoom: 2.1,
+		subPins: [
+			{ icon: Mountain, label: "Trail", tag: "trail", left: "55%", top: "64%" },
+			{ icon: Timer, label: "Street", tag: "street", left: "73%", top: "56%" },
+			// { icon: HeartPulse, label: "Endurance", tag: "endurance", left: "45%", top: "80%" },
+		],
+	},
+];
+
+const subSize = "clamp(24px, 3.4cqw, 34px)";
+---
+
+<div class="terrain relative w-full">
+	<div class="terrain-scene relative w-full">
+		<img
+			src="/typo-4x.png"
+			alt="Isometric topographic terrain"
+			class="terrain-img w-full select-none"
+			draggable="false"
+		/>
+
+		{/* Primary category pins */}
+		{
+			categories.map((cat) => (
+				<div
+					class="primary-pin pointer-events-none absolute -translate-x-1/2"
+					style={`left:${cat.left};top:${cat.top}`}
+					data-cat={cat.id}
+					data-focus-x={cat.focus.x}
+					data-focus-y={cat.focus.y}
+					data-zoom={cat.zoom}
+				>
+					<HexPin
+						icon={cat.icon}
+						label={cat.label}
+						size={cat.size}
+						stem={true}
+						stemLength={cat.stem}
+					/>
+				</div>
+			))
+		}
+
+		{/* Sub-pins (revealed on zoom) */}
+		{
+			categories.map((cat) =>
+				cat.subPins.map((sp) => (
+					<div
+						class="sub-pin pointer-events-none absolute -translate-x-1/2"
+						style={`left:${sp.left};top:${sp.top}`}
+						data-cat={cat.id}
+					>
+						<HexPin
+							icon={sp.icon}
+							label={sp.label}
+							href={`/blog?tag=${sp.tag}`}
+							staticLabel={true}
+							size={subSize}
+						/>
+					</div>
+				)),
+			)
+		}
+	</div>
+
+	<button
+		type="button"
+		id="terrain-back"
+		class="terrain-back pointer-events-auto absolute right-3 top-3 z-20 hidden items-center gap-1.5 rounded-full border border-slate-700/60 bg-slate-900/90 px-4 py-1.5 font-mono text-xs uppercase tracking-[0.15em] text-slate-200 backdrop-blur-sm transition-colors hover:border-accent/50 hover:text-accent-hover"
+	>
+		← Return
+	</button>
+</div>
+
+<style>
+	.terrain {
+		container-type: inline-size;
+		overflow: visible;
+	}
+	.terrain.zoomed {
+		overflow: hidden;
+	}
+
+	/* On mobile the map breaks out of `main`'s padding to span the full
+	   viewport width — giving the terrain more presence and, because pins are
+	   sized in `cqw`, a slightly larger container to scale against. */
+	@media (max-width: 720px) {
+		.terrain {
+			width: 100vw;
+			margin-left: calc(50% - 50vw);
+			margin-right: calc(50% - 50vw);
+		}
+	}
+
+	.terrain-scene {
+		transform-origin: 0 0;
+		transition: transform 0.55s cubic-bezier(0.4, 0, 0.2, 1);
+		will-change: transform;
+	}
+
+	/* Resting presentation (wider screens): the map sits at 3/4 scale,
+	   centered horizontally (translateX = (1 - 0.75) / 2 = 12.5%), so the
+	   hero reads calmer — while the container keeps its full width, letting
+	   the click-to-zoom interaction expand into the entire available space.
+	   The negative margin reclaims the vertical layout space the scaled-down
+	   scene no longer fills: 0.25 × (image aspect 2720/4596) ≈ 14.8%. */
+	@media (min-width: 721px) {
+		.terrain-scene {
+			transform: translateX(12.5%) scale(0.75);
+		}
+		.terrain {
+			margin-bottom: -14.8%;
+		}
+	}
+
+	/* Sub-pins hidden until their category is zoomed in */
+	.sub-pin {
+		opacity: 0;
+		visibility: hidden;
+		transform: translate(-50%, 8px) scale(0.9);
+		transition:
+			opacity 0.35s ease 0.15s,
+			transform 0.35s ease 0.15s,
+			visibility 0s linear 0.5s;
+	}
+	.sub-pin.is-active {
+		opacity: 1;
+		visibility: visible;
+		transform: translate(-50%, 0) scale(1);
+		transition:
+			opacity 0.35s ease 0.2s,
+			transform 0.35s ease 0.2s,
+			visibility 0s;
+	}
+
+	/* Dim the non-focused primary pins while zoomed */
+	.terrain.zoomed .primary-pin {
+		transition:
+			opacity 0.4s ease,
+			filter 0.4s ease;
+	}
+	.terrain.zoomed .primary-pin:not(.is-active) {
+		opacity: 0.3;
+		filter: grayscale(0.6);
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.terrain-scene,
+		.sub-pin {
+			transition-duration: 0s;
+		}
+	}
+</style>
+
+<script>
+	const terrain = document.querySelector<HTMLElement>(".terrain");
+	const scene = terrain?.querySelector<HTMLElement>(".terrain-scene");
+	const img = terrain?.querySelector<HTMLElement>(".terrain-img");
+	const back = document.getElementById("terrain-back");
+
+	if (terrain && scene && back) {
+		const primaries =
+			terrain.querySelectorAll<HTMLElement>(".primary-pin");
+		const subs = terrain.querySelectorAll<HTMLElement>(".sub-pin");
+
+		const zoomTo = (pin: HTMLElement) => {
+			const fx = parseFloat(pin.dataset.focusX ?? "50");
+			const fy = parseFloat(pin.dataset.focusY ?? "50");
+			const z = parseFloat(pin.dataset.zoom ?? "2");
+			const cat = pin.dataset.cat;
+
+			// Center the focal point: with transform-origin 0 0,
+			// screen(focal) = translate + z*focal  →  translate = 0.5 - z*focal
+			const tx = (0.5 - z * (fx / 100)) * 100;
+			const ty = (0.5 - z * (fy / 100)) * 100;
+			scene.style.transform = `translate(${tx}%, ${ty}%) scale(${z})`;
+
+			terrain.classList.add("zoomed");
+			primaries.forEach((p) =>
+				p.classList.toggle("is-active", p.dataset.cat === cat),
+			);
+			subs.forEach((s) =>
+				s.classList.toggle("is-active", s.dataset.cat === cat),
+			);
+			back.classList.remove("hidden");
+			back.classList.add("flex");
+		};
+
+		const reset = () => {
+			scene.style.transform = "";
+			terrain.classList.remove("zoomed");
+			primaries.forEach((p) => p.classList.remove("is-active"));
+			subs.forEach((s) => s.classList.remove("is-active"));
+			back.classList.add("hidden");
+			back.classList.remove("flex");
+		};
+
+		primaries.forEach((pin) => {
+			const trigger = pin.querySelector<HTMLElement>(".hexpin-trigger");
+			trigger?.addEventListener("click", (e) => {
+				e.preventDefault();
+				e.stopPropagation();
+				zoomTo(pin);
+			});
+		});
+
+		back.addEventListener("click", reset);
+
+		// Tapping the terrain background (not a pin) also resets
+		img?.addEventListener("click", () => {
+			if (terrain.classList.contains("zoomed")) reset();
+		});
+
+		document.addEventListener("keydown", (e) => {
+			if (e.key === "Escape") reset();
+		});
+	}
+</script>

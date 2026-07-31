@@ -1,0 +1,36 @@
+---
+const links = [
+	{ href: "mailto:mateusz@jasinski.software", label: "Email", external: false },
+	{ href: "https://github.com/mateuszjasinski", label: "GitHub", external: true },
+	{
+		href: "https://www.linkedin.com/in/mateusz-jasi%C5%84ski-758097131/",
+		label: "LinkedIn",
+		external: true,
+	},
+];
+---
+
+<section class="mt-28 mb-8 flex flex-col items-center text-center">
+	<p class="eyebrow">
+		Basecamp
+	</p>
+	<h2 class="mt-4 font-bold text-4xl md:text-5xl text-slate-50">
+		End of the trail. For now.
+	</h2>
+	<p class="mt-4 max-w-md text-slate-400">
+		Open to conversations on architecture, Python, and the occasional mountain route.
+	</p>
+	<div class="mt-8 flex flex-wrap justify-center gap-4">
+		{
+			links.map(({ href, label, external }) => (
+				<a
+					href={href}
+					{...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+					class="rounded-full bg-slate-800 px-6 py-2.5 font-medium text-slate-100 no-underline ring-1 ring-slate-700/60 transition-colors hover:bg-slate-700 hover:text-accent-hover"
+				>
+					{label}
+				</a>
+			))
+		}
+	</div>
+</section>

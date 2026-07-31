@@ -2,10 +2,8 @@
 title: 'Creating Cron jobs with Django and Kubernetes'
 description: 'Most developers use Celery or RabbitMQ for handling periodic tasks in Django or general python web apps. In this article, I would like to show you, how you can use Kubernetes Cron Job to replace your current scheduler configuration'
 pubDate: 'Nov 10 2022'
-tags: 'Kubernetes'
+tags: ['Django', 'Kubernetes', 'Python']
 ---
-
-Most developers use Celery or RabbitMQ for handling periodic tasks in Django or general python web apps. In this article, I would like to show you, how you can use Kubernetes Cron Job to replace your current scheduler configuration.
 
 #### Celery Config
 First, I’d like to explain why I think Celery can be an overkill for some of your projects.

@@ -1,0 +1,136 @@
+---
+import { Code } from "lucide-astro";
+
+export interface Props {
+	/** Hexagon diameter — number (px) or any CSS length (e.g. a clamp()/cqw value) */
+	size?: number | string;
+	/** A lucide-astro icon component */
+	icon?: any;
+	/** Category / tag name shown on hover / tap (or always, with `staticLabel`) */
+	label?: string;
+	/** Render as a link instead of a button */
+	href?: string;
+	/** Keep the label permanently visible (used for sub-pins) */
+	staticLabel?: boolean;
+	/** Render the leader-line stem + anchor dot beneath the pin */
+	stem?: boolean;
+	/** Leader stem length — number (px) or any CSS length */
+	stemLength?: number | string;
+	/** Extra classes on the outer wrapper */
+	class?: string;
+}
+
+const {
+	size = 52,
+	icon: Icon = Code,
+	label,
+	href,
+	staticLabel = false,
+	stem = false,
+	stemLength = 56,
+	class: className = "",
+} = Astro.props;
+
+const sizeCss = typeof size === "number" ? `${size}px` : size;
+const stemCss = typeof stemLength === "number" ? `${stemLength}px` : stemLength;
+const Tag = href ? "a" : "button";
+---
+
+<div class:list={["hexpin group relative flex flex-col items-center hover:cursor-pointer", className]}>
+	<Tag
+		href={href}
+		type={href ? undefined : "button"}
+		class:list={[
+			"hexpin-trigger pointer-events-auto relative flex shrink-0 items-center justify-center drop-shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/60 rounded-md no-underline",
+			{ "label-static": staticLabel },
+		]}
+		style={`width:${sizeCss};height:${sizeCss}`}
+		aria-label={label}
+	>
+		{/* Outlined hexagon: dark interior, orange stroke */}
+		<svg
+			viewBox="0 0 100 100"
+			class="absolute inset-0 h-full w-full"
+			aria-hidden="true"
+		>
+			<polygon
+				class="fill-slate-900/90 stroke-accent"
+				points="50,3 96,27 96,73 50,97 4,73 4,27"
+				stroke-width="4"
+				stroke-linejoin="round"
+			/>
+		</svg>
+		<Icon class="relative h-1/2 w-1/2 text-accent" stroke-width={2.25} />
+
+		{label && <span class="hex-label">{label}</span>}
+	</Tag>
+
+	{
+		stem && (
+			<>
+				<span class="hex-stem" style={`height:${stemCss}`} />
+				<span class="hex-dot" />
+			</>
+		)
+	}
+</div>
+
+<style>
+	.hex-stem {
+		width: 1px;
+		background: linear-gradient(
+			to bottom,
+			var(--accent),
+			color-mix(in srgb, var(--accent) 25%, transparent)
+		);
+	}
+	.hex-dot {
+		width: 5px;
+		height: 5px;
+		margin-top: -1px;
+		border-radius: 9999px;
+		background: var(--accent);
+		box-shadow: 0 0 6px color-mix(in srgb, var(--accent) 60%, transparent);
+	}
+
+	/* Category label — sits above the hexagon, revealed on hover / tap.
+	   Sized in container-query units so it scales with the terrain map: on a
+	   narrow (mobile / full-bleed) map the pills shrink proportionally instead
+	   of overlapping — and stay sane when a zoomed category scales the scene. */
+	.hex-label {
+		position: absolute;
+		bottom: 100%;
+		left: 50%;
+		margin-bottom: 0.5em;
+		white-space: nowrap;
+		border-radius: 9999px;
+		border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+		background: rgba(30, 41, 59, 0.96);
+		padding: 0.3em 0.75em;
+		font-family: var(--font-mono);
+		font-size: clamp(0.52rem, 1.05cqw, 0.7rem);
+		text-transform: uppercase;
+		letter-spacing: 0.08em;
+		color: var(--accent-hover);
+		box-shadow: var(--box-shadow);
+		pointer-events: none;
+		opacity: 0;
+		transform: translate(-50%, 4px);
+		transition:
+			opacity 0.18s ease,
+			transform 0.18s ease;
+	}
+
+	.group:hover .hex-label,
+	.hexpin-trigger.is-open .hex-label,
+	.hexpin-trigger.label-static .hex-label {
+		opacity: 1;
+		transform: translate(-50%, 0);
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.hex-label {
+			transition-duration: 0s;
+		}
+	}
+</style>

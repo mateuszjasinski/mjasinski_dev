@@ -2,10 +2,8 @@
 title: 'Improve your demo and get more for yourself.'
 description: 'One of the developer’s responsibilities is to present features and changes to clients and product owners. In this article, I would like to give you a few suggestions on how to can improve your presentations, make a good impression and build your look as an expert.'
 pubDate: 'Nov 5 2022'
-tags: 'Presentation'
+tags: ['Presentation']
 ---
-
-One of the developer’s responsibilities is to present features and changes to clients and product owners. In this article, I would like to give you a few suggestions on how to can improve your presentations, make a good impression and build your look as an expert.
 
 #### Build a plan
 The first and most crucial step is preparing your presentation. Some people prefer to go with the flow just checking the list of done stories and showing them one by one. It’s acceptable when giving this kind of presentation to coworkers or friends. Still, you must remember that any mistake or unexpected situation will put you in an uncomfortable position.

@@ -2,11 +2,8 @@
 title: '5 Backend Interview Questions'
 description: 'Preparing for a backend engineering interview can be a challenging yet rewarding experience. Based on my experience as a technical recruiter I will give you a few tips and, more importantly, tell you what you can expect during a technical interview.'
 pubDate: 'Jan 04 2024'
-tags: 'Interview'
+tags: ['Interview']
 ---
-
-Preparing for a backend engineering interview can be a challenging yet rewarding experience. Based on my experience as a technical recruiter I will give you a few tips and, more importantly, tell you what you can expect during a technical interview.
-
 
 ### How would you implement authentication in web services?
 To implement authentication in our system, we’ll use Token-based authentication. When the user successfully logs in, the system generates a token (for example JWT), the token is securely stored by the client and attached as a header to the request to authenticate the user.
