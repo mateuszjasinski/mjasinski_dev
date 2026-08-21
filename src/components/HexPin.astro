@@ -16,6 +16,8 @@ export interface Props {
 	stem?: boolean;
 	/** Leader stem length — number (px) or any CSS length */
 	stemLength?: number | string;
+	/** Emit a radar "ping" ripple from the pin (primary pins only) */
+	ping?: boolean;
 	/** Extra classes on the outer wrapper */
 	class?: string;
 }
@@ -28,6 +30,7 @@ const {
 	staticLabel = false,
 	stem = false,
 	stemLength = 56,
+	ping = false,
 	class: className = "",
 } = Astro.props;
 
@@ -47,6 +50,10 @@ const Tag = href ? "a" : "button";
 		style={`width:${sizeCss};height:${sizeCss}`}
 		aria-label={label}
 	>
+		{/* Radar "ping" ripple — sits behind the opaque hexagon so it only
+		    reads as a pulse emanating from the pin's edges */}
+		{ping && <span class="hex-ping" aria-hidden="true" />}
+
 		{/* Outlined hexagon: dark interior, orange stroke */}
 		<svg
 			viewBox="0 0 100 100"
@@ -76,6 +83,45 @@ const Tag = href ? "a" : "button";
 </div>
 
 <style>
+	/* Radar "ping": two concentric rings expanding from the pin and fading
+	   out, staggered so a fresh pulse emerges as the previous one dissolves.
+	   The rings start scaled just inside the hexagon and grow past it — the
+	   opaque hex face masks them at rest, so they only appear as a ripple. */
+	.hex-ping {
+		position: absolute;
+		inset: 0;
+		z-index: 0;
+		pointer-events: none;
+	}
+	.hex-ping::before,
+	.hex-ping::after {
+		content: "";
+		position: absolute;
+		inset: 0;
+		border-radius: 9999px;
+		border: 1.5px solid var(--accent);
+		opacity: 0;
+		transform: scale(0.9);
+		animation: hex-ping 3.2s cubic-bezier(0.16, 0.84, 0.44, 1) infinite;
+	}
+	.hex-ping::after {
+		animation-delay: 1.6s;
+	}
+
+	@keyframes hex-ping {
+		0% {
+			transform: scale(0.9);
+			opacity: 0;
+		}
+		12% {
+			opacity: 0.5;
+		}
+		100% {
+			transform: scale(2.3);
+			opacity: 0;
+		}
+	}
+
 	.hex-stem {
 		width: 1px;
 		background: linear-gradient(
@@ -131,6 +177,10 @@ const Tag = href ? "a" : "button";
 	@media (prefers-reduced-motion: reduce) {
 		.hex-label {
 			transition-duration: 0s;
+		}
+		.hex-ping::before,
+		.hex-ping::after {
+			animation: none;
 		}
 	}
 </style>
