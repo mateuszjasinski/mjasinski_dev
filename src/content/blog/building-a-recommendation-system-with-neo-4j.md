@@ -28,7 +28,7 @@ Cypher is a query language similar to SQL that we can use for creating, browsing
 
 ```cypher
 // Create Node 
-CREATE (node:label{key_1:value, key_2:value)
+CREATE (node:label{key_1:value, key_2:value})
 RETURN node
 
 // Matching by nodes
@@ -36,16 +36,16 @@ MATCH (node:label)
 RETURN node 
 
 // Matching by relationship
-MATCH (node:label)<-[: Relationship]-(n) 
+MATCH (node:label)<-[:Relationship]-(n) 
 RETURN n 
 ```
 
 #### Building Recommendation System using Neo4j
 For this article, we will build a movie recommendation system, based on movies watched by followed users.
 
-System storing information about Users and Movies
-The system will allow the creation of a relationship between the User and the Movie. Also, users should be able to follow other users.
-The goal is to display movies that have been watched by following users.
+- System storing information about Users and Movies
+- The system will allow the creation of a relationship between the User and the Movie. Also, users should be able to follow other users.
+- The goal is to display movies that have been watched by following users.
 ##### Build Our graph
 We need to start by adding some data to our database. A few users and a few films ought to be made. Let’s begin with our first query.
 
@@ -62,14 +62,14 @@ CREATE (titanic:Movie{title:"Titanic"}),(avatar:Movie{title:"Avatar"}),
 Now that our initial nodes have been successfully created, let’s examine the graph. We must now add a few node-to-node relations. Start with Tom’s favorite movies and the users that he follows.
 
 ```cypher
-# Create User -> Movie relationship called Watched
+// Create User -> Movie relationship called Watched
 
 MATCH 
 (avatar:Movie{title: "Avatar"}),
 (tom:User{firstName:"Tom"}) 
 CREATE (tom)-[:Watched]->(avatar)
 
-# Create user -> user relationship called Following
+// Create user -> user relationship called Following
 
 MATCH 
 (tom:User{firstName:"Tom"}),
@@ -84,7 +84,7 @@ A few operations later, our final graph will look like this.
 Let’s make some queries
 When our graph is filled with data, we can start exploring our data, on start let’s take an easy task to find all nodes with label users.
 
-```
+```text
 MATCH (users:User) 
 return users
 ===================
@@ -102,7 +102,7 @@ RESULT
 
 Easy, right? So now, let’s try to find all movies, that John watched.
 
-```
+```text
 MATCH (user:User{firstName:"John"})--(movies:Movie) 
 return movies
 =========================
@@ -117,11 +117,10 @@ RESULT
 ```
 Okay, this one was already a little more difficult, because we had to introduce the relation, but have hope that you got the concept and we can move forward.
 
-Next, let’s try to find all users followed by Tom knowing that Tom's node is equal to 6.
+Next, let’s try to find all users followed by Tom.
 
-```
-MATCH (user:User)-[:Following]->(following) 
-WHERE ID(user) = 6 
+```text
+MATCH (user:User{firstName:"Tom"})-[:Following]->(following) 
 return following
 ==========================
 ╒═══════════════════════════╕
@@ -135,7 +134,7 @@ return following
 
 As you can see, using Cypher is very similar to SQL in the case of using clauses. Our final task for today is to build a query for our recommendation system, we want to find all movies watched by users followed by Tom.
 
-```
+```text
 MATCH (tom:User{firstName: "Tom"})-[:Following]->(users)-[:Watched]->(movies) 
 return movies
 ==============================
@@ -152,7 +151,7 @@ RESULT
 ```
 Almost there. One more thing to do, we need to exclude movies already watched by Tom. For that, we’ll use **WHERE NOT** clause.
 
-```
+```text
 MATCH 
 (tom:User{firstName: "Tom"}), 
 (tom)-[:Following]->(users)-[:Watched]->(otherMovies) 
