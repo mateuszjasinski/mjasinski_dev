@@ -21,31 +21,32 @@ To use MinIO we need to configure two additional containers in our docker-compos
 - minio-client — the additional container that will create your buckets automatically
 
 ```yaml
+services:
+  minio:
+    image: minio/minio:latest
+    ports:
+      - 9000:9000
+      - 9001:9001
+    environment:
+      MINIO_ACCESS_KEY: minio
+      MINIO_SECRET_KEY: minio123
+    command: server /data --console-address ":9001"
+    volumes:
+      - minio-data:/data
+  minio-client:
+    image: minio/mc:latest
+    entrypoint: >
+      /bin/sh -c "
+      /usr/bin/mc config host add --quiet --api s3v4 local http://minio:9000 minio minio123;
+      /usr/bin/mc rb --force local/<your-bucket-name>/;
+      /usr/bin/mc mb --quiet local/<your-bucket-name>/;
+      /usr/bin/mc policy set public local/<your-bucket-name>;
+      "
+    depends_on:
+      - minio
+
 volumes:
   minio-data:
-minio:
-  image: minio/minio:latest
-  ports:
-  - 9000:9000
-  - 9001:9001
-  environment:
-    MINIO_ACCESS_KEY: minio
-    MINIO_SECRET_KEY: minio123
-  command: server /data --console-address ":9001"
-  volumes:
-  - minio-data:/data
-minio-client:
-  image: minio/mc:latest
-  entrypoint: >
-    /bin/sh -c "
-    /usr/bin/mc config host rm expo;
-    /usr/bin/mc config host add --quiet --api s3v4 local http://minio:9000 minio minio123;
-    /usr/bin/mc rb --force local/<your-bucket-name>/;
-    /usr/bin/mc mb --quiet local/<your-bucket-name>/;
-    /usr/bin/mc policy set public local/<your-bucket-name>;
-    "
-  depends_on:
-    - minio
 ```
 
 
@@ -83,10 +84,17 @@ settings.py
 ```python
 STATIC_URL = '/static/'
 STATICFILES_LOCATION = 'static'
-STATICFILES_STORAGE = "blogs.storage.StaticS3Boto3Storage"
 
 MEDIA_URL = '/media/'
-DEFAULT_FILE_STORAGE = "blogs.storage.S3MediaStorage"
+
+STORAGES = {
+    "default": {
+        "BACKEND": "blogs.storage.S3MediaStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "blogs.storage.StaticS3Boto3Storage",
+    },
+}
 
 AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
 AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
